@@ -8,6 +8,9 @@ BaiduNetDisk.config do |c|
   c.app_key    = 'your_app_key'
   c.secret_key = 'your_secret_key'
 
+  # Max threads for uploading file slices, default to 1
+  c.max_threads = 4
+
   # The following two are optional;
   # Fill them in if you want to explicitly indicate uploading to someone else's storage space
   c.access_token  = 'your_access_token'
