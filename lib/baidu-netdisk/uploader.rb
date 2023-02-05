@@ -5,22 +5,19 @@ class BaiduNetDisk::Uploader
   SLICE_SIZE = 4 * 1024 * 1024
   DEFAULT_MAX_THREADS = 1
 
-  class PermissionDenied < StandardError; end
-  class SliceMissing < StandardError; end
-  class FileExisted < StandardError; end
-  class SpaceNotEnough < StandardError; end
-
   def initialize(source_path, target_path, options = {})
     raise StandardError, 'Uploading directory is not supported at present.' if File.directory?(source_path)
 
     @source_path = source_path
     @target_path = target_path
+
     @verbose = options[:verbose]
+    @slice_prefix = ".tmp_#{Random.hex(6)}_"
+
     @rtype = options[:overwrite] ? 3 : 1
     @file_size = File.size @source_path
     @content_md5  = Digest::MD5.hexdigest(File.read @source_path)
     @upload_id = nil
-    @slice_prefix = ".tmp_#{Random.hex(6)}_"
     @is_dir = false
     @slices = []
     @access_token = options[:access_token] || BaiduNetDisk.access_token
@@ -32,7 +29,7 @@ class BaiduNetDisk::Uploader
     pre_upload
     upload_by_slices
     create_file
-  rescue PermissionDenied
+  rescue BaiduNetDisk::Exception::PermissionDenied
     $stderr.print 'You are not authorised to upload files to your target path.'
     return false
   ensure
@@ -57,6 +54,8 @@ class BaiduNetDisk::Uploader
 
       $stdout.print "Split file into #{@slices.size} slices. Done.\n" if @verbose
     else
+      $stdout.print "File size is smaller than 4MB, no split.\n" if @verbose
+
       @slices << { md5: @content_md5, slice_file_path: @source_path, block_id: 0}
     end
   end
@@ -82,7 +81,7 @@ class BaiduNetDisk::Uploader
         @slices[index][:block_id] = block_id
       end
     elsif response_body['errno'] == 3
-      raise PermissionDenied
+      raise BaiduNetDisk::Exception::PermissionDenied
     else
       raise
     end
