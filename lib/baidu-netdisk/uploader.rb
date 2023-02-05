@@ -20,8 +20,8 @@ class BaiduNetDisk::Uploader
     @upload_id = nil
     @is_dir = false
     @slices = []
-    @access_token = options[:access_token] || BaiduNetDisk.access_token
     @refresh_token = options[:refresh_token] || BaiduNetDisk.refresh_token
+    @access_token = options[:access_token] || BaiduNetDisk.access_token
   end
 
   def execute
@@ -32,6 +32,25 @@ class BaiduNetDisk::Uploader
   rescue BaiduNetDisk::Exception::PermissionDenied
     $stderr.print 'You are not authorised to upload files to your target path.'
     return false
+  rescue BaiduNetDisk::Exception::AuthenticationFailed, BaiduNetDisk::Exception::AccessTokenExpired => e
+    raise e if @tried_refresh_token
+
+    if @refresh_token
+      $stdout.print "Access token expired. Trying to refresh...\n"
+      @tried_refresh_token = true
+      begin
+        @access_token = BaiduNetDisk::Auth.refresh_access_token(@refresh_token)['access_token']
+        $stdout.puts "Access token refreshed!"
+        retry
+      rescue => e
+        $stderr.print "Failed to refresh access token.\n"
+        raise e
+      end
+
+    else
+      $stderr.print "Token expired. Please provide a refresh token.\n"
+      raise e
+    end
   ensure
     clear_up
   end
@@ -39,6 +58,8 @@ class BaiduNetDisk::Uploader
   private
 
   def prepare
+    return if @slices.any?
+
     if @file_size > SLICE_SIZE
       $stdout.print "Splitting file into slices...\n" if @verbose
 
@@ -80,10 +101,10 @@ class BaiduNetDisk::Uploader
       response_body['block_list'].each.with_index do |block_id, index|
         @slices[index][:block_id] = block_id
       end
-    elsif response_body['errno'] == 3
-      raise BaiduNetDisk::Exception::PermissionDenied
+    elsif BaiduNetDisk::Exception::MAPPING[response_body['errno']]
+      raise BaiduNetDisk::Exception::MAPPING[response_body['errno']]
     else
-      raise
+      raise StandardError, response.body
     end
   end
 
