@@ -9,4 +9,6 @@ module BaiduNetDisk
 
 end
 
+require 'baidu-netdisk/exception'
+require 'baidu-netdisk/auth'
 require 'baidu-netdisk/uploader'
