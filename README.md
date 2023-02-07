@@ -1,6 +1,8 @@
 # Baidu Netdisk
 
+[![CI](https://github.com/hegwin/baidu-netdisk/actions/workflows/test.yml/badge.svg)](https://github.com/hegwin/baidu-netdisk/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/hegwin/baidu-netdisk/branch/main/graph/badge.svg?token=HCUJ4QDMH6)](https://codecov.io/gh/hegwin/baidu-netdisk)
+[![Maintainability](https://api.codeclimate.com/v1/badges/75bf545e0efd8f0b24e1/maintainability)](https://codeclimate.com/github/hegwin/baidu-netdisk/maintainability)
 
 ## Configuration
 
