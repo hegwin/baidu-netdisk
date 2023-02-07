@@ -1,5 +1,7 @@
 # Baidu Netdisk
 
+[![codecov](https://codecov.io/gh/hegwin/baidu-netdisk/branch/main/graph/badge.svg?token=HCUJ4QDMH6)](https://codecov.io/gh/hegwin/baidu-netdisk)
+
 ## Configuration
 
 ```ruby
