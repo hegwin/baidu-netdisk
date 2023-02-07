@@ -1,0 +1,174 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://pan.baidu.com/rest/2.0/xpan/file?access_token=<ACCESS_TOKEN>&method=precreate
+    body:
+      encoding: UTF-8
+      string: path=%2Fapps%2Frspec%2Ftest.csv&size=54&isdir=false&autoinit=1&rtype=1&block_list=%5B%22adb786a1c7688ee00e916f35c7c7a096%22%5D&content-md5=adb786a1c7688ee00e916f35c7c7a096
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - pan.baidu.com
+      Content-Length:
+      - '171'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - pan.baidu.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 07 Feb 2023 05:47:20 GMT
+      Flow-Level:
+      - '3'
+      Logid:
+      - '8941910179892330793'
+      P3p:
+      - CP=" OTI DSP COR IVA OUR IND COM "
+      Server:
+      - nginx
+      Set-Cookie:
+      - BAIDUID=CAC9877B6C91C5DDEC2475DBB95A14DC:FG=1; expires=Wed, 07-Feb-24 05:47:20
+        GMT; max-age=31536000; path=/; domain=.baidu.com; version=1
+      Vary:
+      - Accept-Encoding
+      X-Powered-By:
+      - BaiduCloud
+      Yld:
+      - '8941910179892330793'
+      Yme:
+      - ZIGW+iw9QE0RbCsAT3b+qnFIuP8ASwHytAJIySKCmeU=
+      Content-Length:
+      - '185'
+    body:
+      encoding: ASCII-8BIT
+      string: '{"path":"\/apps\/rspec\/test.csv","uploadid":"N1-MTE3LjgzLjIyMi4xMTQ6MTY3NTc0ODg0MDo4OTQxOTEwMTc5ODkyMzMwNzkz","return_type":1,"block_list":[],"errno":0,"request_id":8941910179892330793}'
+  recorded_at: Tue, 07 Feb 2023 05:47:20 GMT
+- request:
+    method: post
+    uri: https://d.pcs.baidu.com/rest/2.0/pcs/superfile2?access_token=<ACCESS_TOKEN>&method=upload&partseq=0&path=/apps/rspec/test.csv&type=tmpfile&uploadid=N1-MTE3LjgzLjIyMi4xMTQ6MTY3NTc0ODg0MDo4OTQxOTEwMTc5ODkyMzMwNzkz
+    body:
+      encoding: ASCII-8BIT
+      string: "------RubyFormBoundary8oAe7xhiOCGjsmAf\r\nContent-Disposition: form-data;
+        name=\"file\"; filename=\"test.csv\"\r\nContent-Type: text/csv\r\n\r\nName,Class\nNorthsea,Shaman\nHegwin,Preist\nBroglie,Mage\n\r\n------RubyFormBoundary8oAe7xhiOCGjsmAf--\r\n"
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (darwin20 arm64) ruby/2.7.5p203
+      Content-Length:
+      - '230'
+      Content-Type:
+      - multipart/form-data; boundary=----RubyFormBoundary8oAe7xhiOCGjsmAf
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - d.pcs.baidu.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '74'
+      Content-Md5:
+      - adb786a1c7688ee00e916f35c7c7a096
+      Content-Type:
+      - text/html;charset=utf8
+      Date:
+      - Tue, 07 Feb 2023 05:47:21 GMT
+      Remote-Ip:
+      - pcs.bae.baidu.com
+      Server:
+      - POMS/CloudUI 1.0
+      Status:
+      - '200'
+      X-Bs-Client-Ip:
+      - MTE3LjgzLjIyMi4xMTQ=
+      X-Bs-File-Size:
+      - '54'
+      X-Bs-Meta-Crc32:
+      - '522758871'
+      X-Bs-Request-Id:
+      - MTAuNDEuMTQuMjE1OjMwMjQ6ODcxNDU5ODg2OTUyNzYwNjY5OjIwMjMtMDItMDcgMTM6NDc6MjE=
+      X-Bs-Version:
+      - 5bcb94aee170582d7a8fd2b2817d78b1
+      X-Poms-Key:
+      - 1400adb786a1c7688ee00e916f35c7c7a0961f28aad7000000000036
+    body:
+      encoding: UTF-8
+      string: '{"md5":"adb786a1c7688ee00e916f35c7c7a096","request_id":871459886952760669}'
+  recorded_at: Tue, 07 Feb 2023 05:47:21 GMT
+- request:
+    method: post
+    uri: https://pan.baidu.com/rest/2.0/xpan/file?access_token=<ACCESS_TOKEN>&method=create
+    body:
+      encoding: UTF-8
+      string: path=%2Fapps%2Frspec%2Ftest.csv&size=54&isdir=false&rtype=1&uploadid=N1-MTE3LjgzLjIyMi4xMTQ6MTY3NTc0ODg0MDo4OTQxOTEwMTc5ODkyMzMwNzkz&block_list=%5B%22adb786a1c7688ee00e916f35c7c7a096%22%5D
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - pan.baidu.com
+      Content-Length:
+      - '188'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - pan.baidu.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 07 Feb 2023 05:47:22 GMT
+      Flow-Level:
+      - '3'
+      Logid:
+      - '8941910718963218896'
+      P3p:
+      - CP=" OTI DSP COR IVA OUR IND COM "
+      Server:
+      - nginx
+      Set-Cookie:
+      - BAIDUID=FB6BFFEB0A6C4656B4E369FBE1A6F31E:FG=1; expires=Wed, 07-Feb-24 05:47:22
+        GMT; max-age=31536000; path=/; domain=.baidu.com; version=1
+      Vary:
+      - Accept-Encoding
+      X-Powered-By:
+      - BaiduCloud
+      Yld:
+      - '8941910718963218896'
+      Yme:
+      - ZIGW/y8rX0gMYzIYTmvhqWhXvfobVAPxqQpNwymG35nZKy9wkbdUzwc0
+      Content-Length:
+      - '198'
+    body:
+      encoding: ASCII-8BIT
+      string: '{"category":4,"ctime":1675748842,"from_type":1,"fs_id":642517710572127,"isdir":0,"md5":"c64bcb872k1c4b4ec6e4e5f1873aa2da","mtime":1675748842,"path":"\/apps\/rspec\/test_20230207_134722.csv","server_filename":"test_20230207_134722.csv","size":54,"errno":0,"name":"\/apps\/rspec\/test_20230207_134722.csv"}'
+  recorded_at: Tue, 07 Feb 2023 05:47:22 GMT
+recorded_with: VCR 6.1.0

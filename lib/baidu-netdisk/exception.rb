@@ -7,6 +7,7 @@ module BaiduNetDisk
     class AuthenticationFailed < StandardError; end
     class AccessTokenExpired < StandardError; end
     class UnknownError < StandardError; end
+    class UploadDirectoryNotSupported < StandardError; end
 
     MAPPING = {
       -10 => ::BaiduNetDisk::Exception::SpaceNotEnough,

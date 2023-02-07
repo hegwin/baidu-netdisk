@@ -6,7 +6,8 @@ class BaiduNetDisk::Uploader
   DEFAULT_MAX_THREADS = 1
 
   def initialize(source_path, target_path, options = {})
-    raise StandardError, 'Uploading directory is not supported at present.' if File.directory?(source_path)
+    @is_dir = File.directory?(source_path) ? true : false
+    raise BaiduNetDisk::Exception::UploadDirectoryNotSupported, 'Uploading directory is not supported at present.' if @is_dir
 
     @source_path = source_path
     @target_path = target_path
@@ -18,7 +19,6 @@ class BaiduNetDisk::Uploader
     @file_size = File.size @source_path
     @content_md5  = Digest::MD5.hexdigest(File.read @source_path)
     @upload_id = nil
-    @is_dir = false
     @slices = []
     @refresh_token = options[:refresh_token] || BaiduNetDisk.refresh_token
     @access_token = options[:access_token] || BaiduNetDisk.access_token
@@ -145,6 +145,7 @@ class BaiduNetDisk::Uploader
 
     if response_body['errno'].zero?
       $stdout.print "File was successfully created at #{Time.at(response_body['ctime'])}!\n"
+      response_body
     else
       raise
     end
@@ -153,10 +154,10 @@ class BaiduNetDisk::Uploader
   def clear_up
     return if @slices.length < 2
 
-    $stdout.print "Cleaning tmp slice files...\n"
+    $stdout.print "Cleaning tmp slice files...\n" if @verbose
     @slices.each do |slice|
       File.delete(slice[:slice_file_path]) if File.exist?(slice[:slice_file_path])
     end
-    $stdout.print "Cleaning tmp slice files. Done.\n"
+    $stdout.print "Cleaning tmp slice files. Done.\n" if @verbose
   end
 end
