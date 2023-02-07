@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
 
   s.platform = Gem::Platform::RUBY
-  s.required_ruby_version = '>= 2.5.0'
+  s.required_ruby_version = '>= 2.6.0'
   s.require_paths = ['lib']
 
   s.add_dependency 'rest-client'
