@@ -17,3 +17,11 @@ if ENV['CI'] == 'true'
 end
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each { |f| require f }
+
+BaiduNetDisk.config do |c|
+  c.app_id        = ENV['APP_ID']
+  c.app_key       = ENV['APP_KEY']
+  c.secret_key    = ENV['SECRET_KEY']
+  c.access_token  = ENV['ACCESS_TOKEN']
+  c.refresh_token = ENV['REFRESH_TOKEN']
+end
