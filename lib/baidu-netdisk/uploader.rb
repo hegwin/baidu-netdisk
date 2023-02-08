@@ -3,7 +3,6 @@ require 'json'
 
 class BaiduNetDisk::Uploader
   SLICE_SIZE = 4 * 1024 * 1024
-  DEFAULT_MAX_THREADS = 1
 
   def initialize(source_path, target_path, options = {})
     @is_dir = File.directory?(source_path) ? true : false
@@ -30,27 +29,11 @@ class BaiduNetDisk::Uploader
     upload_by_slices
     create_file
   rescue BaiduNetDisk::Exception::PermissionDenied
-    $stderr.print 'You are not authorised to upload files to your target path.'
+    $stderr.puts 'You are not authorised to upload files to your target path.'
     return false
   rescue BaiduNetDisk::Exception::AuthenticationFailed, BaiduNetDisk::Exception::AccessTokenExpired => e
     raise e if @tried_refresh_token
-
-    if @refresh_token
-      $stdout.print "Access token expired. Trying to refresh...\n"
-      @tried_refresh_token = true
-      begin
-        @access_token = BaiduNetDisk::Auth.refresh_access_token(@refresh_token)['access_token']
-        $stdout.puts "Access token refreshed!"
-        retry
-      rescue => e
-        $stderr.print "Failed to refresh access token.\n"
-        raise e
-      end
-
-    else
-      $stderr.print "Token expired. Please provide a refresh token.\n"
-      raise e
-    end
+    retry if refresh_token!
   ensure
     clear_up
   end
@@ -61,7 +44,7 @@ class BaiduNetDisk::Uploader
     return if @slices.any?
 
     if @file_size > SLICE_SIZE
-      $stdout.print "Splitting file into slices...\n" if @verbose
+      $stdout.puts 'Splitting file into slices...' if @verbose
 
       `split -b #{SLICE_SIZE} "#{@source_path}" #{@slice_prefix}`
 
@@ -73,9 +56,9 @@ class BaiduNetDisk::Uploader
         }
       end
 
-      $stdout.print "Split file into #{@slices.size} slices. Done.\n" if @verbose
+      $stdout.puts "Split file into #{@slices.size} slices. Done." if @verbose
     else
-      $stdout.print "File size is smaller than 4MB, no split.\n" if @verbose
+      $stdout.puts 'File size is smaller than 4MB, no split.' if @verbose
 
       @slices << { md5: @content_md5, slice_file_path: @source_path, block_id: 0}
     end
@@ -84,12 +67,12 @@ class BaiduNetDisk::Uploader
   def pre_upload
     response = RestClient.post "https://pan.baidu.com/rest/2.0/xpan/file?method=precreate&access_token=#{@access_token}", {
       path: @target_path,
-      size: @file_size,
-      isdir: @is_dir,
-      autoinit: 1,
-      rtype: @rtype,
-      block_list: @slices.map { |slice| slice[:md5] }.to_json,
-      :'content-md5' => @content_md5
+        size: @file_size,
+        isdir: @is_dir,
+        autoinit: 1,
+        rtype: @rtype,
+        block_list: @slices.map { |slice| slice[:md5] }.to_json,
+        :'content-md5' => @content_md5
     }, { 'User-Agent' => 'pan.baidu.com' }
 
     response_body = JSON.parse response.body
@@ -111,53 +94,76 @@ class BaiduNetDisk::Uploader
   def upload_by_slices
     queue = @slices.dup
 
-    (BaiduNetDisk.max_threads || DEFAULT_MAX_THREADS).times.map do
+    BaiduNetDisk.max_uploading_threads.times.map do
       Thread.new do
         while queue.length > 0
           slice = queue.pop
           if slice
-            response = RestClient.post "https://d.pcs.baidu.com/rest/2.0/pcs/superfile2?access_token=#{@access_token}&method=upload&type=tmpfile&path=#{@target_path}&uploadid=#{@upload_id}&partseq=#{slice[:block_id]}", { file: File.new(slice[:slice_file_path], 'rb') }
-
-            if response.code == 200
-              $stdout.print "Slice ##{slice[:block_id]} uploaded!\n" if @verbose
-            else
-              raise
-            end
+            upload_slice_file(slice[:slice_file_path], slice[:block_id])
           end
         end
       end
     end.each(&:join)
 
-    $stdout.print "Slices upload complete.\n" if @verbose
+    $stdout.puts 'Slices upload complete.' if @verbose
+  end
+
+  def upload_slice_file(slice_file_path, block_id = 0)
+    response = RestClient.post "https://d.pcs.baidu.com/rest/2.0/pcs/superfile2?access_token=#{@access_token}&method=upload&type=tmpfile&path=#{@target_path}&uploadid=#{@upload_id}&partseq=#{block_id}", { file: File.new(slice_file_path, 'rb') }
+    if response.code == 200
+      $stdout.puts "Slice ##{block_id} uploaded!" if @verbose
+    else
+      raise StandardError, response.body
+    end
   end
 
   def create_file
     response = RestClient.post "https://pan.baidu.com/rest/2.0/xpan/file?method=create&access_token=#{@access_token}", {
       path: @target_path,
-      size: @file_size,
-      isdir: @is_dir,
-      rtype: @rtype,
-      uploadid: @upload_id,
-      block_list: @slices.map { |slice| slice[:md5] }.to_json
+        size: @file_size,
+        isdir: @is_dir,
+        rtype: @rtype,
+        uploadid: @upload_id,
+        block_list: @slices.map { |slice| slice[:md5] }.to_json
     }, { 'User-Agent' => 'pan.baidu.com' }
 
     response_body = JSON.parse response.body
 
     if response_body['errno'].zero?
-      $stdout.print "File was successfully created at #{Time.at(response_body['ctime'])}!\n"
+      $stdout.puts "File was successfully created at #{Time.at(response_body['ctime'])}!"
       response_body
     else
-      raise
+      raise StandardError, response.body
     end
   end
 
   def clear_up
     return if @slices.length < 2
 
-    $stdout.print "Cleaning tmp slice files...\n" if @verbose
+    $stdout.puts 'Cleaning tmp slice files...' if @verbose
     @slices.each do |slice|
       File.delete(slice[:slice_file_path]) if File.exist?(slice[:slice_file_path])
     end
-    $stdout.print "Cleaning tmp slice files. Done.\n" if @verbose
+    $stdout.puts 'Cleaning tmp slice files. Done.' if @verbose
+  end
+
+  def refresh_token!
+    @tried_refresh_token = true
+
+    if @refresh_token
+      $stdout.puts 'Access token expired. Trying to refresh...' if @verbose
+      begin
+        @access_token, @refresh_token = BaiduNetDisk::Auth.refresh_access_token(@refresh_token)
+        $stdout.puts 'Access token refreshed!'
+        return true
+      rescue => e
+        $stderr.puts 'Failed to refresh access token.'
+        raise e
+      end
+
+    else
+      $stderr.puts 'Access token expired. Please provide a refresh token.' if @verbose
+      raise e
+    end
   end
 end

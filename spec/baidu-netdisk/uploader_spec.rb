@@ -44,15 +44,34 @@ describe BaiduNetDisk::Uploader do
 
   describe '#execute' do
     it 'uploads a small file to net disk' do
-      VCR.use_cassette('full_successful_upload') do
+      VCR.use_cassette('full_upload_success') do
         result = subject.execute
         expect(result['errno']).to be_zero
         expect(result['size']).to eq small_fixture_file_size
       end
     end
+
+    context 'access token expired while refresh token works' do
+      let(:expired_token) { 'expired' }
+      subject { described_class.new(source_path, target_path, access_token: expired_token) }
+      before do
+        allow(subject).to receive(:upload_by_slices)
+        allow(subject).to receive(:create_file)
+      end
+
+      it 'tries to refresh token' do
+        VCR.use_cassette('pre_upload_token_expired_and_refresh') do
+          expect(subject).to receive(:refresh_token!).and_call_original
+          subject.execute
+          expect(subject.instance_variable_get :@access_token).not_to eq expired_token
+        end
+      end
+    end
+
+    xcontext 'access token expired while refresh token not provided'
   end
 
-  describe 'prepare' do
+  describe '#prepare' do
     context 'small file' do
       it 'assigns file slices' do
         subject.send :prepare
@@ -88,6 +107,65 @@ describe BaiduNetDisk::Uploader do
           expect(slice[:slice_file_path]).to include slice_prefix
           expect(slice[:block_id]).to be_nil
         end
+      end
+    end
+  end
+
+  describe '#clear_up' do
+    context 'small file' do
+      it 'keeps original file' do
+        subject.send :prepare
+        subject.send :clear_up
+
+        expect(File.exists?(source_path)).to be_truthy
+      end
+    end
+
+    context 'file with size greater than 4 MB' do
+      let(:source_path) { File.join(__dir__, '..', 'fixtures', big_fixture_file_name) }
+      before { create_big_file(source_path) }
+      after do
+        remove_big_file(source_path)
+      end
+
+      it 'removes slice files' do
+        subject.send :prepare
+        slices = subject.instance_variable_get :@slices
+
+        slices.each do |slice|
+          expect(File.exists?(slice[:slice_file_path])).to be_truthy
+        end
+
+        subject.send :clear_up
+
+        expect(File.exists?(source_path)).to be_truthy
+        slices.each do |slice|
+          expect(File.exists?(slice[:slice_file_path])).to be_falsey
+        end
+      end
+    end
+  end
+
+  describe '#pre_upload' do
+    context 'files with size greater than 4 MB' do
+      let(:source_path) { File.join(__dir__, '..', 'fixtures', big_fixture_file_name) }
+      before { create_big_file(source_path) }
+      after do
+        subject.send :clear_up
+        remove_big_file(source_path)
+      end
+
+      it 'assigns block id for each slices' do
+        subject.send :prepare
+        slices = subject.instance_variable_get :@slices
+
+        slices.each {|slice| expect(slice[:block_id]).to be_nil }
+
+        VCR.use_cassette('pre_upload_success') do
+          subject.send :pre_upload
+        end
+
+        slices.each {|slice| expect(slice[:block_id]).to be_kind_of Integer }
       end
     end
   end

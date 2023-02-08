@@ -25,6 +25,14 @@ class BaiduNetDisk::Auth
       response = RestClient.get "https://openapi.baidu.com/oauth/2.0/token?grant_type=refresh_token&refresh_token=#{refresh_token}&client_id=#{BaiduNetDisk.app_key}&client_secret=#{BaiduNetDisk.secret_key}"
 
       response_body = JSON.parse response.body
+
+      access_token, refresh_token = response_body.fetch_values('access_token', 'refresh_token')
+
+      if BaiduNetDisk.after_token_refreshed&.respond_to? :call
+        after_token_refreshed.call(access_token, refresh_token)
+      end
+
+      [access_token, refresh_token]
     end
 
     private

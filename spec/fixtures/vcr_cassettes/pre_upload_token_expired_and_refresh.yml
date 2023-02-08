@@ -1,0 +1,165 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://pan.baidu.com/rest/2.0/xpan/file?access_token=expired&method=precreate
+    body:
+      encoding: UTF-8
+      string: path=%2Fapps%2Frspec%2Ftest.csv&size=54&isdir=false&autoinit=1&rtype=1&block_list=%5B%22adb786a1c7688ee00e916f35c7c7a096%22%5D&content-md5=adb786a1c7688ee00e916f35c7c7a096
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - pan.baidu.com
+      Content-Length:
+      - '171'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - pan.baidu.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 08 Feb 2023 06:35:53 GMT
+      Flow-Level:
+      - '3'
+      Logid:
+      - '8965885037279532660'
+      P3p:
+      - CP=" OTI DSP COR IVA OUR IND COM "
+      Server:
+      - nginx
+      Set-Cookie:
+      - BAIDUID=BE7C41DD66D097F907B946BDAD05434B:FG=1; expires=Thu, 08-Feb-24 06:35:53
+        GMT; max-age=31536000; path=/; domain=.baidu.com; version=1
+      - PANPSC=; expires=Fri, 01-Apr-1900 00:00:00 GMT; path=/; domain=pan.baidu.com;
+        HttpOnly;
+      Vary:
+      - Accept-Encoding
+      X-Powered-By:
+      - BaiduCloud
+      Yld:
+      - '8965885037279532660'
+      Yme:
+      - ZIGW+iozQEsXdTcAUmr/tG5NuOUfSQHrqAVFwSGHnKmj1xU=
+      Content-Length:
+      - '65'
+    body:
+      encoding: ASCII-8BIT
+      string: '{"errno":-6,"request_id":8965885037279532660}'
+  recorded_at: Wed, 08 Feb 2023 06:35:53 GMT
+- request:
+    method: get
+    uri: https://openapi.baidu.com/oauth/2.0/token?client_id=<APP_KEY>&client_secret=<SECRET_KEY>&grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (darwin20 arm64) ruby/2.7.5p203
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - openapi.baidu.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - no-store
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Feb 2023 06:35:53 GMT
+      P3p:
+      - CP=" OTI DSP COR IVA OUR IND COM "
+      Server:
+      - BWS
+      Set-Cookie:
+      - BAIDUID=BE7C41DD66D097F91597AC3E0241AE4C:FG=1; expires=Thu, 31-Dec-37 23:55:55
+        GMT; max-age=2145916555; path=/; domain=.baidu.com; version=1
+      Tracecode:
+      - '21537304022524717834020814'
+      Content-Length:
+      - '287'
+    body:
+      encoding: UTF-8
+      string: '{"expires_in":2592000,"refresh_token":"new_refresh_token","access_token":"new_access_token","session_secret":"","session_key":"","scope":"basic
+        netdisk"}
+
+        '
+  recorded_at: Wed, 08 Feb 2023 06:35:53 GMT
+- request:
+    method: post
+    uri: https://pan.baidu.com/rest/2.0/xpan/file?access_token=new_access_token&method=precreate
+    body:
+      encoding: UTF-8
+      string: path=%2Fapps%2Frspec%2Ftest.csv&size=54&isdir=false&autoinit=1&rtype=1&block_list=%5B%22adb786a1c7688ee00e916f35c7c7a096%22%5D&content-md5=adb786a1c7688ee00e916f35c7c7a096
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - pan.baidu.com
+      Content-Length:
+      - '171'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - pan.baidu.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 08 Feb 2023 06:35:54 GMT
+      Flow-Level:
+      - '3'
+      Logid:
+      - '8965885147070130020'
+      P3p:
+      - CP=" OTI DSP COR IVA OUR IND COM "
+      Server:
+      - nginx
+      Set-Cookie:
+      - BAIDUID=BE7C41DD66D097F98AFEC8F04F72D50B:FG=1; expires=Thu, 08-Feb-24 06:35:54
+        GMT; max-age=31536000; path=/; domain=.baidu.com; version=1
+      Vary:
+      - Accept-Encoding
+      X-Powered-By:
+      - BaiduCloud
+      Yld:
+      - '8965885147070130020'
+      Yme:
+      - ZIGW/y8rX0kMYzcYTmvhrm5XvfsfVAP9oAJLwiiD0JDFDy1Q0U5Aih00
+      Content-Length:
+      - '185'
+    body:
+      encoding: ASCII-8BIT
+      string: '{"path":"\/apps\/rspec\/test.csv","uploadid":"N1-MTE3LjgzLjIyMi4xMTQ6MTY3NTgzODE1Mzo4OTY1ODg1MTQ3MDcwMTMwMDIw","return_type":1,"block_list":[],"errno":0,"request_id":8965885147070130020}'
+  recorded_at: Wed, 08 Feb 2023 06:35:53 GMT
+recorded_with: VCR 6.1.0
