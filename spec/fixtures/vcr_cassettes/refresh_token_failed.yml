@@ -1,0 +1,49 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://openapi.baidu.com/oauth/2.0/token?client_id=<APP_KEY>&client_secret=<SECRET_KEY>&grant_type=refresh_token&refresh_token=
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (darwin20 arm64) ruby/2.7.5p203
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - openapi.baidu.com
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      Cache-Control:
+      - no-store
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Feb 2023 06:30:52 GMT
+      P3p:
+      - CP=" OTI DSP COR IVA OUR IND COM "
+      Server:
+      - BWS
+      Set-Cookie:
+      - BAIDUID=8126C290216AAD5122149F79016C2195:FG=1; expires=Thu, 31-Dec-37 23:55:55
+        GMT; max-age=2145916555; path=/; domain=.baidu.com; version=1
+      Tracecode:
+      - '18525651360199528970020914'
+      Content-Length:
+      - '94'
+    body:
+      encoding: UTF-8
+      string: '{"error":"invalid_request","error_description":"The request is missing
+        a required parameter"}
+
+        '
+  recorded_at: Thu, 09 Feb 2023 06:30:52 GMT
+recorded_with: VCR 6.1.0

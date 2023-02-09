@@ -29,10 +29,13 @@ class BaiduNetDisk::Auth
       access_token, refresh_token = response_body.fetch_values('access_token', 'refresh_token')
 
       if BaiduNetDisk.after_token_refreshed&.respond_to? :call
-        after_token_refreshed.call(access_token, refresh_token)
+        BaiduNetDisk.after_token_refreshed.call(access_token, refresh_token)
       end
 
       [access_token, refresh_token]
+    rescue RestClient::BadRequest
+      $stdout.puts "Refresh token failed."
+      raise BaiduNetDisk::Exception::RefreshTokenFailed
     end
 
     private

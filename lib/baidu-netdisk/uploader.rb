@@ -64,6 +64,7 @@ class BaiduNetDisk::Uploader
     end
   end
 
+  # Doc in Baidu: https://pan.baidu.com/union/doc/3ksg0s9r7
   def pre_upload
     response = RestClient.post "https://pan.baidu.com/rest/2.0/xpan/file?method=precreate&access_token=#{@access_token}", {
       path: @target_path,
@@ -84,10 +85,8 @@ class BaiduNetDisk::Uploader
       response_body['block_list'].each.with_index do |block_id, index|
         @slices[index][:block_id] = block_id
       end
-    elsif BaiduNetDisk::Exception::MAPPING[response_body['errno']]
-      raise BaiduNetDisk::Exception::MAPPING[response_body['errno']]
     else
-      raise StandardError, response.body
+      raise BaiduNetDisk::Exception::MAPPING[response_body['errno']] || StandardError
     end
   end
 
@@ -133,7 +132,7 @@ class BaiduNetDisk::Uploader
       $stdout.puts "File was successfully created at #{Time.at(response_body['ctime'])}!"
       response_body
     else
-      raise StandardError, response.body
+      raise BaiduNetDisk::Exception::MAPPING[response_body['errno']] || StandardError, response.body
     end
   end
 
@@ -152,18 +151,12 @@ class BaiduNetDisk::Uploader
 
     if @refresh_token
       $stdout.puts 'Access token expired. Trying to refresh...' if @verbose
-      begin
-        @access_token, @refresh_token = BaiduNetDisk::Auth.refresh_access_token(@refresh_token)
-        $stdout.puts 'Access token refreshed!'
-        return true
-      rescue => e
-        $stderr.puts 'Failed to refresh access token.'
-        raise e
-      end
+      @access_token, @refresh_token = BaiduNetDisk::Auth.refresh_access_token(@refresh_token)
+      $stdout.puts 'Access token refreshed!' if @verbose
 
+      return true
     else
-      $stderr.puts 'Access token expired. Please provide a refresh token.' if @verbose
-      raise e
+      raise BaiduNetDisk::Exception::RefreshTokenNotProvided, 'Access token expired. Please provide a refresh token.'
     end
   end
 end

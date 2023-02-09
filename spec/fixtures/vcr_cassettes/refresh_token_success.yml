@@ -1,0 +1,49 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://openapi.baidu.com/oauth/2.0/token?client_id=<APP_KEY>&client_secret=<SECRET_KEY>&grant_type=refresh_token&refresh_token=<REFRESH_TOKEN>
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (darwin20 arm64) ruby/2.7.5p203
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - openapi.baidu.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - no-store
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Feb 2023 06:46:53 GMT
+      P3p:
+      - CP=" OTI DSP COR IVA OUR IND COM "
+      Server:
+      - BWS
+      Set-Cookie:
+      - BAIDUID=994B3EA89406170832555D6D2AFFE9DC:FG=1; expires=Thu, 31-Dec-37 23:55:55
+        GMT; max-age=2145916555; path=/; domain=.baidu.com; version=1
+      Tracecode:
+      - '28130438880576165898020914'
+      Content-Length:
+      - '287'
+    body:
+      encoding: UTF-8
+      string: '{"expires_in":2592000,"refresh_token":"new_refresh_token","access_token":"new_access_token","session_secret":"","session_key":"","scope":"basic
+        netdisk"}
+
+        '
+  recorded_at: Thu, 09 Feb 2023 06:46:52 GMT
+recorded_with: VCR 6.1.0

@@ -66,9 +66,26 @@ describe BaiduNetDisk::Uploader do
           expect(subject.instance_variable_get :@access_token).not_to eq expired_token
         end
       end
+
+      context 'refresh_token not provided' do
+        it 'does not try to refresh' do
+          subject.instance_variable_set :@refresh_token, nil
+          allow(subject).to receive(:pre_upload).and_raise BaiduNetDisk::Exception::AccessTokenExpired
+          expect(BaiduNetDisk::Auth).not_to receive(:refresh_access_token)
+
+          expect { subject.execute }.to raise_error BaiduNetDisk::Exception::RefreshTokenNotProvided
+        end
+      end
     end
 
-    xcontext 'access token expired while refresh token not provided'
+    context 'uploading permission denied' do
+      it 'returns false and does clear up' do
+        allow(subject).to receive(:pre_upload).and_raise BaiduNetDisk::Exception::PermissionDenied
+
+        expect(subject).to receive(:clear_up)
+        expect(subject.execute).to be_falsey
+      end
+    end
   end
 
   describe '#prepare' do
@@ -107,6 +124,12 @@ describe BaiduNetDisk::Uploader do
           expect(slice[:slice_file_path]).to include slice_prefix
           expect(slice[:block_id]).to be_nil
         end
+      end
+
+      it 'does not create more files when retries' do
+        subject.send :prepare
+
+        expect { subject.send :prepare }.not_to change { subject.instance_variable_get(:@slices).size }
       end
     end
   end
