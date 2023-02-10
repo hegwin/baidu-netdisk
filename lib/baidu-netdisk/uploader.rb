@@ -64,7 +64,8 @@ class BaiduNetDisk::Uploader
     end
   end
 
-  # Doc in Baidu: https://pan.baidu.com/union/doc/3ksg0s9r7
+  # API doc in Baidu:
+  # https://pan.baidu.com/union/doc/3ksg0s9r7
   def pre_upload
     response = RestClient.post "https://pan.baidu.com/rest/2.0/xpan/file?method=precreate&access_token=#{@access_token}", {
       path: @target_path,
@@ -90,9 +91,12 @@ class BaiduNetDisk::Uploader
     end
   end
 
+  # API doc in Baidu:
+  # https://pan.baidu.com/union/doc/nksg0s9vi
   def upload_by_slices
     queue = @slices.dup
 
+    # TODO Consider `typhoeus` rather than invoking multiple threads manually
     BaiduNetDisk.max_uploading_threads.times.map do
       Thread.new do
         while queue.length > 0
@@ -109,13 +113,14 @@ class BaiduNetDisk::Uploader
 
   def upload_slice_file(slice_file_path, block_id = 0)
     response = RestClient.post "https://d.pcs.baidu.com/rest/2.0/pcs/superfile2?access_token=#{@access_token}&method=upload&type=tmpfile&path=#{@target_path}&uploadid=#{@upload_id}&partseq=#{block_id}", { file: File.new(slice_file_path, 'rb') }
-    if response.code == 200
-      $stdout.puts "Slice ##{block_id} uploaded!" if @verbose
-    else
-      raise StandardError, response.body
-    end
+
+    $stdout.puts "Slice ##{block_id} uploaded!" if @verbose
+
+    response
   end
 
+  # API doc in Baidu:
+  # https://pan.baidu.com/union/doc/rksg0sa17
   def create_file
     response = RestClient.post "https://pan.baidu.com/rest/2.0/xpan/file?method=create&access_token=#{@access_token}", {
       path: @target_path,
@@ -154,7 +159,7 @@ class BaiduNetDisk::Uploader
       @access_token, @refresh_token = BaiduNetDisk::Auth.refresh_access_token(@refresh_token)
       $stdout.puts 'Access token refreshed!' if @verbose
 
-      return true
+      true
     else
       raise BaiduNetDisk::Exception::RefreshTokenNotProvided, 'Access token expired. Please provide a refresh token.'
     end

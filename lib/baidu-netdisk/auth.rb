@@ -3,13 +3,14 @@ require 'json'
 
 class BaiduNetDisk::Auth
   class << self
+    # This is a debug tool to get auth code for your own Baidu account
     def get_auth_code(redirect_uri = 'oob')
-      check_required_configs
+      check_required_configs if redirect_uri == 'oob'
 
       url = "https://openapi.baidu.com/oauth/2.0/authorize?response_type=code&client_id=#{BaiduNetDisk.app_key}&redirect_uri=#{redirect_uri}&scope=basic,netdisk&device_id=#{BaiduNetDisk.app_id}"
 
       if redirect_uri == 'oob'
-        system("open \"#{url}\"")
+        system('open', url)
       else
         RestClient.get url
       end
@@ -18,7 +19,10 @@ class BaiduNetDisk::Auth
     def get_token(auth_code, redirect_uri = 'oob')
       response = RestClient.get "https://openapi.baidu.com/oauth/2.0/token?grant_type=authorization_code&code=#{auth_code}&client_id=#{BaiduNetDisk.app_key}&client_secret=#{BaiduNetDisk.secret_key}&redirect_uri=#{redirect_uri}"
 
-      response_body = JSON.parse response.body
+      if redirect_uri == 'oob'
+        response_body = JSON.parse response.body
+        access_token, refresh_token = response_body.fetch_values('access_token', 'refresh_token')
+      end
     end
 
     def refresh_access_token(refresh_token)

@@ -1,4 +1,13 @@
 describe BaiduNetDisk::Auth do
+  describe '.get_auth_code' do
+    context 'non-server mode' do
+      it 'opens' do
+        allow(described_class).to receive(:system) { true }
+        described_class.get_auth_code('oob')
+      end
+    end
+  end
+
   describe '.refresh_access_token' do
     let(:user) { OpenStruct.new access_token: 'expired_token', refresh_token: ENV['REFRESH_TOKEN'] }
     let(:hook) do
