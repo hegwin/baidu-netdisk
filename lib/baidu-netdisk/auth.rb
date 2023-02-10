@@ -21,7 +21,7 @@ class BaiduNetDisk::Auth
 
       if redirect_uri == 'oob'
         response_body = JSON.parse response.body
-        access_token, refresh_token = response_body.fetch_values('access_token', 'refresh_token')
+        BaiduNetDisk.access_token, BaiduNetDisk.refresh_token = response_body.fetch_values('access_token', 'refresh_token')
       end
     end
 
