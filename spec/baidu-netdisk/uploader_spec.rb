@@ -140,7 +140,7 @@ describe BaiduNetDisk::Uploader do
         subject.send :prepare
         subject.send :clear_up
 
-        expect(File.exists?(source_path)).to be_truthy
+        expect(File.exist?(source_path)).to be_truthy
       end
     end
 
@@ -156,14 +156,14 @@ describe BaiduNetDisk::Uploader do
         slices = subject.instance_variable_get :@slices
 
         slices.each do |slice|
-          expect(File.exists?(slice[:slice_file_path])).to be_truthy
+          expect(File.exist?(slice[:slice_file_path])).to be_truthy
         end
 
         subject.send :clear_up
 
-        expect(File.exists?(source_path)).to be_truthy
+        expect(File.exist?(source_path)).to be_truthy
         slices.each do |slice|
-          expect(File.exists?(slice[:slice_file_path])).to be_falsey
+          expect(File.exist?(slice[:slice_file_path])).to be_falsey
         end
       end
     end
